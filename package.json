@@ -9,9 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.4.29",
+    "bootstrap": "^5.3.3",
+    "vue": "^3.4.31",
     "vue-axios": "^3.5.2",
-    "vue-router": "^4.3.3"
+    "vue-router": "^4.3.3",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",

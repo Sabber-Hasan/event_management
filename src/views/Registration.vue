@@ -36,42 +36,57 @@ export default {
     }
   },
   methods: {
-  async onSubmit() {
-    try {
-      // Get CSRF token from meta tag
-      const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    async onSubmit() {
+      try {
+        // Get CSRF token from meta tag
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-      // Set CSRF token in Axios headers
-      axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
+        // Set CSRF token in Axios headers
+        axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
 
-      // Use POST request to send form data
-      const response = await axios.post('http://localhost/vue/event_management_api/event_management_api/public/api/registration', this.user);
-      
-      // Check if response has data
-      if (response && response.data) {
-        this.msg = response.data.message || 'User registered successfully';
-        console.log('Response:', response.data); // Log the response data
-      } else {
-        this.msg = 'Unexpected response from the server';
-        console.error('Unexpected response:', response); // Log the unexpected response
+        // Use POST request to send form data
+        const response = await axios.post('http://localhost/vue/event_management_api/event_management_api/public/api/registration', this.user);
+
+        // Check if response has data
+        if (response && response.data) {
+          alert(this.msg = response.data.message || 'User registered successfully');
+          this.$router.push({ path: '/' });
+          console.log('Response:', response.data); // Log the response data
+        } else {
+          this.msg = 'Unexpected response from the server';
+          console.error('Unexpected response:', response); // Log the unexpected response
+        }
+      } catch (error) {
+        if (error.response) {
+          // Server responded with a status other than 200 range
+          this.msg = error.response.data.message || 'Error adding user';
+          console.error('Error response:', error.response); // Log the error response
+        } else if (error.request) {
+          // Request was made but no response received
+          this.msg = 'No response from the server';
+          console.error('No response:', error.request); // Log the request
+        } else {
+          // Something else caused the error
+          this.msg = 'Error adding user';
+          console.error('Error:', error.message); // Log the error message
+        }
       }
-    } catch (error) {
-      if (error.response) {
-        // Server responded with a status other than 200 range
-        this.msg = error.response.data.message || 'Error adding user';
-        console.error('Error response:', error.response); // Log the error response
-      } else if (error.request) {
-        // Request was made but no response received
-        this.msg = 'No response from the server';
-        console.error('No response:', error.request); // Log the request
-      } else {
-        // Something else caused the error
-        this.msg = 'Error adding user';
-        console.error('Error:', error.message); // Log the error message
+    },
+  },
+  mounted() {
+    // Show the toast message if there is a message stored in `this.msg`
+    if (this.msg) {
+      this.toastMessage(this.msg, 'danger');
+    }
+  },
+  watch: {
+    msg: function (newMsg, oldMsg) {
+      // Show the toast message if there is a message stored in `this.msg`
+      if (newMsg) {
+        this.toastMessage(newMsg, 'danger');
       }
     }
-  }
-}
+  },
 
 
 }

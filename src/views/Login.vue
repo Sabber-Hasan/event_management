@@ -1,6 +1,6 @@
 <template>
   <div class="containerm">
-    <form>
+    <form @submit.prevent="onSubmit">
       <fieldset>
         <legend>User Login</legend>
         <div>
@@ -11,42 +11,42 @@
           <label for="password">Password</label>
           <input type="password" v-model="user.password" id="password" placeholder="Enter password">
         </div>
-        <button type="submit"  @submit.prevent="onSubmit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
       </fieldset>
     </form>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
-  export default {
-    name: "login",
-    data() {
-      return {
-        user:{
-          email: '',
-          password: ''
-        },
-          msg: 'no error',
-      token: 'no token'
-      }
-    },
-    methods: {
-    async onSubmit() {
-      try {
-        const response = await axios.post('http://localhost/vue/event_management_api/event_management_api/public/api/login', this.user);
-        this.msg = response.data.message || 'Student added successfully';
-        console.log(this.msg)
-        this.token = response.data.token;
-        localStorage.setItem('auth_token', this.token);
-      } catch (error) {
-        this.msg = error.response.data.message || 'Error adding student'
-        console.error('Error fetching data:', error)
-      }
+export default {
+  name: "login",
+  data() {
+    return {
+      user: {
+        email: '',
+        password: ''
+      },
+      token: '',
+      msg: '',
     }
+  },
+  methods: {
+  async onSubmit() {
+    try {
+      const response = await axios.post('http://localhost/vue/event_management_api/event_management_api/public/api/login', this.user);
+      alert(this.msg = response.data.message || 'User logged in successfully');
+      console.log(this.msg)
+      this.token = response.data.token;
+      localStorage.setItem('auth_token', this.token);
+      await this.$router.push({ path: '/' }); // Await the router push
+    } catch (error) {
+      this.msg = error.response.data.message || 'Error logging in'
+      console.error('Error fetching data:', error)
+    }
+  }
+}
 
-  }
-  }
+}
 </script>
 
 <style scoped>
@@ -59,6 +59,7 @@ import axios from 'axios';
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
 form {
   display: flex;
   flex-direction: column;

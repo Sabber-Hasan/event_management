@@ -4,6 +4,8 @@ import AboutView from '../views/AboutView.vue'
 import Login from '../views/Login.vue'
 import Registration from '../views/Registration.vue'
 import Hall from '../components/HallBooking.vue'
+import Order from '../components/Order.vue'
+import Report from '../components/Report.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +35,16 @@ const router = createRouter({
       path: '/hall',
       name: 'hall',
       component: Hall
+    },
+    {
+      path: '/order',
+      name: 'order',
+      component: Order
+    },
+    {
+      path: '/report',
+      name: 'report',
+      component: Report
     },
   ]
 })
