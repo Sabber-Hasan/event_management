@@ -63,6 +63,57 @@ export default {
         this.bookingDate = bookingDate
     },
     methods: {
+        generateInvoice(orderId) {
+            const invoiceContent = `
+    <html>
+      <head>
+        <title>Order Invoice</title>
+        <style>
+          body { font-family: Arial, sans-serif; }
+          .invoice { width: 80%; margin: 0 auto; }
+          .header { text-align: center; margin-bottom: 20px; }
+          .details { margin-bottom: 20px; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          @media print {
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="invoice">
+          <div class="header">
+            <h1>Order Invoice</h1>
+            <p>Order ID: ${orderId}</p>
+          </div>
+          <div class="details">
+            <h2>Hall Information:</h2>
+            <p>Hall Name: ${this.hallName}</p>
+            <p>Capacity: ${this.capacity}</p>
+            <p>Price: $${this.price}</p>
+            <p>Booking Date: ${this.bookingDate}</p>
+          </div>
+          <div class="details">
+            <h2>User Information:</h2>
+            <p>Name: ${this.userName}</p>
+            <p>Email: ${this.userEmail}</p>
+            <p>Phone: ${this.userPhone}</p>
+          </div>
+          <div class="details">
+            <h2>Payment Information:</h2>
+            <p>Payment Method: ${this.paymentMethod}</p>
+          </div>
+          <button class="no-print" onclick="window.print()">Print Invoice</button>
+        </div>
+      </body>
+    </html>
+  `;
+
+            const invoiceWindow = window.open('', '_blank');
+            invoiceWindow.document.write(invoiceContent);
+            invoiceWindow.document.close();
+        },
+
         async placeOrder() {
             try {
                 const response = await axios.post('http://localhost/vue/event_management_api/event_management_api/public/api/orders', {
@@ -77,19 +128,23 @@ export default {
                     payment_method: this.paymentMethod,
                 })
                 if (response.data.success) {
-                    this.clearFormValues()
+                    // Generate invoice immediately after successful order
+                    this.generateInvoice(response.data.order_id);
+
                     this.toast.success("Order placed successfully!", {
                         timeout: 3000,  // 3 seconds
                         onClose: () => {
-                            this.$router.push('/')
+                            this.clearFormValues(); // Clear form values after toast closes
+                            this.$router.push('/');
                         }
                     });
                 } else {
-                    this.toast.error('Error placing order: ' + response.data.message)
+                    this.toast.error(this.hallName+' '+'is not available on'+' '+ this.bookingDate)
                 }
             } catch (error) {
-        console.error('Error placing order:', error)
-        this.toast.error('An error occurred while placing the order.')
+                console.error('Error placing order:', error)
+                this.toast.error(this.hallName+' '+'Convention Center is not available on'+' '+ this.bookingDate)
+                this.$router.push('/hall');
             }
         },
         clearFormValues() {

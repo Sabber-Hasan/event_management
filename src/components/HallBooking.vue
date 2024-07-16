@@ -35,6 +35,23 @@
 
     <div class="container mt-3">
       <h1 class="display-5">Hall Booking</h1>
+
+      <div class="card-group mt-4">
+        <div class="card">
+          <img src="/public/royal2.jpg" class="card-img-top" alt="...">
+
+        </div>
+        <div class="card">
+          <img src="/public/luxury3.jpg" class="card-img-top" alt="...">
+
+        </div>
+        <div class="card">
+          <img src="/public/asthetic3.jpg" class="card-img-top" alt="...">
+
+        </div>
+      </div>
+
+
       <div v-if="halls.length > 0" class="row row-cols-1 row-cols-md-3 g-4">
         <div v-for="hall in halls" :key="hall.id" class="col">
           <div class="card h-100">
@@ -56,7 +73,7 @@
         <h2>Selected Hall: {{ selectedHall.name }}</h2>
         <div class="mb-3">
           <label for="bookingDate" class="form-label">Booking Date</label>
-          <input type="date" id="bookingDate" v-model="bookingDate" required class="form-control">
+          <input type="date" id="bookingDate" v-model="bookingDate" :min="min" :max="max" required class="form-control">
         </div>
         <button type="submit" class="btn btn-primary">Proceed to Order</button>
       </form>
@@ -74,10 +91,22 @@ export default {
     return { toast };
   },
   data() {
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+    // 15th in two months
+    const maxDate = new Date(today)
+    maxDate.setMonth(maxDate.getMonth() + 4)
+    maxDate.setDate(15)
+
+    const threeDaysBefore = new Date(today);
+    threeDaysBefore.setDate(today.getDate() + 3);
     return {
       halls: [],
       selectedHall: null,
       bookingDate: null,
+      min: this.formatDate(threeDaysBefore),
+      max: this.formatDate(maxDate)
     };
   },
   created() {
@@ -115,6 +144,12 @@ export default {
       });
       this.toast.success("Proceeding to order placement.");
     },
+    formatDate(date) {
+      const year = date.getFullYear()
+      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+      const day = date.getDate().toString().padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
   },
 };
 </script>
